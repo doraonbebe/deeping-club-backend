@@ -1,0 +1,4 @@
+
+jwt:
+  key: A0NpEOTIOJOjdHep2ynGwKhtTqPyJmD6XCAsYH2G9w3EOK5rDq
+  access-token-expiration: 3600000
