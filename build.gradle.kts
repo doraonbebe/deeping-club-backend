@@ -59,11 +59,11 @@ dependencies {
 
     // Spring Data Elasticsearch
     implementation("org.springframework.boot:spring-boot-starter-data-elasticsearch")
-    implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client:7.17.0")
+    // https://mvnrepository.com/artifact/co.elastic.clients/elasticsearch-java
+    implementation("co.elastic.clients:elasticsearch-java:8.15.0")
 
 
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-
 
 //    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
 }
