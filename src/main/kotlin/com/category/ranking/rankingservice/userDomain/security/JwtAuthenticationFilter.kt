@@ -6,7 +6,6 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
-import java.sql.DriverManager.println
 import org.springframework.http.HttpHeaders
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
@@ -24,9 +23,6 @@ class JwtAuthenticationFilter(
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        println("request = [${request}], response = [${response}], filterChain = [${filterChain}]")
-
-
         val authHeader = request.getHeader(HttpHeaders.AUTHORIZATION)
 
         if (authHeader.doesNotContainBearerToken()){
@@ -39,8 +35,9 @@ class JwtAuthenticationFilter(
 
         if (email != null && SecurityContextHolder.getContext().authentication == null){
             val user = customUserDetailsService.loadUserByUsername(email)
+
             if (user is UserPrincipal){
-                if (user.getUuid()?.let { jwtTokenProvider.isValid(jwtToken, it) } == true){
+                if (user.getEmail()?.let { jwtTokenProvider.isValid(email, it, jwtToken) } == true){
                     updateContext(user, request)
                 }
             }

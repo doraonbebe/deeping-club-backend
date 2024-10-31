@@ -24,14 +24,16 @@ class JwtTokenProvider(
     fun generationToken(
         email: String,
         expSecond: Date,
+        additionalClaims: Map<String, Any> = emptyMap()
     ): String {
+
 
         return Jwts.builder()
             .claims()
             .subject(email)
-            .issuedAt(Date(System.currentTimeMillis()))
+            .issuedAt(Date())
             .expiration(expSecond)
-            .add(emptyMap())
+            .add(additionalClaims)
             .and()
             .signWith(secretKey)
             .compact()
@@ -39,16 +41,14 @@ class JwtTokenProvider(
     }
 
 
-    fun isValid(token: String, email: String): Boolean {
-        val extractedEmail = extractEmail(email)
-        println(extractedEmail)
-        return extractedEmail == email && !isExpired(token)
+    fun isValid(emailFromToken: String, email: String, token: String): Boolean {
+        return emailFromToken == email || !isExpired(token)
 
     }
     fun isExpired(token: String): Boolean =
         getAllClaims(token)
             .expiration
-            .before(Date(System.currentTimeMillis()))
+            .before(Date())
 
 
     fun extractEmail(token: String): String? =

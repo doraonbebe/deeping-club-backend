@@ -28,6 +28,10 @@ class UserPrincipal(
         return user?.uuid
     }
 
+    fun getEmail(): String? {
+        return user?.email
+    }
+
     override fun isAccountNonExpired(): Boolean {
         return true
     }
