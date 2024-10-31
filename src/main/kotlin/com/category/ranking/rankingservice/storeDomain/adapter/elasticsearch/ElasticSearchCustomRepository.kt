@@ -1,8 +1,8 @@
 package com.category.ranking.rankingservice.storeDomain.adapter.elasticsearch
 
-import org.springframework.stereotype.Repository
+import com.category.ranking.rankingservice.storeDomain.adapter.api.out.StoreResponse
 
 interface ElasticSearchCustomRepository {
 
-    fun getAllStore()
+    fun findStoresByLocationAndDistance(lat: Double, lon: Double, radius: Int): List<StoreResponse>
 }

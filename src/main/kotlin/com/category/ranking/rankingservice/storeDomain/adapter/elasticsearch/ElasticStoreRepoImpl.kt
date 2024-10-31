@@ -1,44 +1,66 @@
 package com.category.ranking.rankingservice.storeDomain.adapter.elasticsearch
 
-import co.elastic.clients.elasticsearch.ElasticsearchClient;
-import co.elastic.clients.elasticsearch._types.query_dsl.Query
-import co.elastic.clients.elasticsearch.core.SearchRequest;
-import co.elastic.clients.elasticsearch.core.SearchResponse;
-import co.elastic.clients.elasticsearch.core.search.Hit;
-import com.category.ranking.rankingservice.storeDomain.esDomain.ElasticStore
+import co.elastic.clients.elasticsearch.ElasticsearchClient
+import com.category.ranking.rankingservice.storeDomain.adapter.api.out.ElasticsearchResponse
+import com.category.ranking.rankingservice.storeDomain.adapter.api.out.StoreResponse
+import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.databind.ObjectMapper
+import org.elasticsearch.client.Request
+import org.elasticsearch.client.Response
+import org.elasticsearch.client.RestClient
+import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Repository
-import java.io.IOException
+
 
 @Repository
 class ElasticStoreRepoImpl(
-    private val elasticsearchClient: ElasticsearchClient
+    private val elasticsearchClient: ElasticsearchClient,
+    private val restClient: RestClient,
+    private val objectMapper: ObjectMapper
 ) : ElasticSearchCustomRepository {
 
     val indexName = "store"
 
-    override fun getAllStore() {
-        val matchAllQuery = Query.Builder()
-            .matchAll { it }
-            .build()
+    override fun findStoresByLocationAndDistance(lat: Double, lon: Double, radius: Int): List<StoreResponse> {
 
-        val searchRequest = SearchRequest.Builder()
-            .index(indexName)
-            .query(matchAllQuery)
-            .build()
+        val query = findStoreByLocationAndDistanceQuery(lat, lon, radius)
 
-        try {
-            val response: SearchResponse<ElasticStore> = elasticsearchClient.search(searchRequest, ElasticStore::class.java)
+        val request = Request(HttpMethod.GET.name(), "/$indexName/_search")
+        request.addParameter("pretty", "true")
+        request.entity = org.apache.http.entity.StringEntity(query, org.apache.http.entity.ContentType.APPLICATION_JSON)
 
-            for (hit: Hit<ElasticStore> in response.hits().hits()) {
-                val store = hit.source();
-                println("name : ${store?.name}")
-                println("category: ${store?.category}")
-                println("location: ${store?.location}")
-                println("address: ${store?.address}")
+        val response: Response = restClient.performRequest(request)
+        val responseBody = response.entity.content.bufferedReader().use { it.readText() }
+
+        val searchResponse: ElasticsearchResponse<StoreResponse> = objectMapper.readValue(
+            responseBody,
+            object : TypeReference<ElasticsearchResponse<StoreResponse>>() {}
+        )
+
+        return searchResponse.hits.hits.map { it._source }
+
+    }
+
+    private fun findStoreByLocationAndDistanceQuery(lat: Double, lon: Double, radius: Int): String {
+        return """
+        {
+            "query": {
+                "bool": {
+                    "filter": {
+                        "geo_distance": {
+                            "distance": "${radius}m",
+                            "location": {
+                                "lat": $lat,
+                                "lon": $lon
+                            }
+                        }
+                    }
+                }
             }
-        } catch (e: IOException) {
-            e.printStackTrace()
         }
+    """.trimIndent()
     }
 
 }
+
+
