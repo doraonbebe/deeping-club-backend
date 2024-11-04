@@ -2,3 +2,10 @@
 jwt:
   key: A0NpEOTIOJOjdHep2ynGwKhtTqPyJmD6XCAsYH2G9w3EOK5rDq
   access-token-expiration: 3600000
+  refresh-token-expiration: 84000000
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html

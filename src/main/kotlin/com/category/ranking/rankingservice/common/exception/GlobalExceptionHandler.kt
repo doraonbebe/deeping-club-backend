@@ -1,6 +1,6 @@
 package com.category.ranking.rankingservice.common.exception
 
-import com.category.ranking.rankingservice.common.adapter.api.ApiResponse
+import com.category.ranking.rankingservice.common.adapter.api.CustomApiResponse
 import com.category.ranking.rankingservice.common.adapter.api.ErrorResponse
 import com.category.ranking.rankingservice.common.adapter.api.FieldErrorDetails
 import org.springframework.http.HttpStatus
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
-    fun handleValidationExceptions(ex: MethodArgumentNotValidException): ResponseEntity<ApiResponse<Unit>> {
+    fun handleValidationExceptions(ex: MethodArgumentNotValidException): ResponseEntity<CustomApiResponse<Unit>> {
         val errors = ex.bindingResult
             .allErrors
             .filterIsInstance<FieldError>()
@@ -30,7 +30,7 @@ class GlobalExceptionHandler {
             details = errors
         )
 
-        val apiResponse = ApiResponse<Unit>(
+        val apiResponse = CustomApiResponse<Unit>(
             code = HttpStatus.BAD_REQUEST.value(),
             success = false,
             error = errorResponse

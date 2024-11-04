@@ -61,8 +61,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-elasticsearch")
     implementation("co.elastic.clients:elasticsearch-java:8.15.0")
 
-    // https://mvnrepository.com/artifact/co.elastic.clients/elasticsearch-java
-
+    // SWAGGER
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
 
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 

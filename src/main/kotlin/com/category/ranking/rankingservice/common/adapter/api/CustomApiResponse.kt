@@ -2,7 +2,7 @@ package com.category.ranking.rankingservice.common.adapter.api
 
 import org.springframework.http.HttpStatus
 
-data class ApiResponse<T>(
+data class CustomApiResponse<T>(
     val code: Int,
     val success: Boolean,
     val data: T? = null,
@@ -10,16 +10,16 @@ data class ApiResponse<T>(
     val timestamp: String = java.time.Instant.now().toString()
 ){
     companion object{
-        fun <T> success(data: T): ApiResponse<T> {
-            return ApiResponse(
+        fun <T> success(data: T): CustomApiResponse<T> {
+            return CustomApiResponse(
                 code = HttpStatus.OK.value(),
                 success = true,
                 data = data
             )
         }
 
-        fun <T> error(message: String, details: List<FieldErrorDetails>? = null): ApiResponse<T> {
-            return ApiResponse(
+        fun <T> error(message: String, details: List<FieldErrorDetails>? = null): CustomApiResponse<T> {
+            return CustomApiResponse(
                 code = HttpStatus.BAD_REQUEST.value(),
                 success = false,
                 error = ErrorResponse(message, details)
