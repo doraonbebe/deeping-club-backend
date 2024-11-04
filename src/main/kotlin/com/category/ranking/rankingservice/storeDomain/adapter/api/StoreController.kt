@@ -2,6 +2,7 @@ package com.category.ranking.rankingservice.storeDomain.adapter.api
 
 
 import com.category.ranking.rankingservice.common.adapter.api.CustomApiResponse
+import com.category.ranking.rankingservice.storeDomain.adapter.api.`in`.LikeRequest
 import com.category.ranking.rankingservice.storeDomain.adapter.api.out.StoreResponse
 import com.category.ranking.rankingservice.storeDomain.service.StoreService
 import io.swagger.v3.oas.annotations.Operation
@@ -10,10 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @Tag(name = "Store API", description = "상점 관련 API")
 @RestController
@@ -47,6 +45,12 @@ class StoreController(
         val stores = storeService.searchStoresByLocation(lat, lon, radius)
         return ResponseEntity.ok(CustomApiResponse.success(stores))
 
+    }
+
+    @PostMapping("/like")
+    fun likeStore(@RequestBody likeRequest: LikeRequest): ResponseEntity<Any> {
+        storeService.saveLike(likeRequest.id, likeRequest.userId)
+        return ResponseEntity.ok().body(true)
     }
 
 }

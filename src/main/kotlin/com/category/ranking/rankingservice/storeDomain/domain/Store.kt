@@ -1,7 +1,7 @@
 package com.category.ranking.rankingservice.storeDomain.domain
 
+import com.fasterxml.jackson.annotation.JsonManagedReference
 import jakarta.persistence.*
-import java.util.*
 
 @Entity
 @Table(name = "store")
@@ -26,8 +26,9 @@ class Store(
     @Column(name = "longitude")
     val longitude: Double,
 
-    @Column(name = "uuid", nullable = false, unique = true)
-    val uuid: String = UUID.randomUUID().toString(),
+    @JsonManagedReference
+    @OneToMany(mappedBy = "store", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    val likes: MutableList<Likes> = mutableListOf()
 
 ) {
 
