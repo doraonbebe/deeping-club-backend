@@ -1,6 +1,6 @@
 package com.category.ranking.rankingservice.storeDomain.adapter.api.`in`
 
 data class LikeRequest(
-    val id: Long,
+    val uuid: String,
     val userId: Long,
 )

@@ -2,6 +2,7 @@ package com.category.ranking.rankingservice.storeDomain.adapter.api
 
 
 import com.category.ranking.rankingservice.common.adapter.api.CustomApiResponse
+import com.category.ranking.rankingservice.common.service.RedisService
 import com.category.ranking.rankingservice.storeDomain.adapter.api.`in`.LikeRequest
 import com.category.ranking.rankingservice.storeDomain.adapter.api.out.StoreResponse
 import com.category.ranking.rankingservice.storeDomain.service.StoreService
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/api/v1/stores")
 class StoreController(
-    private val storeService: StoreService
+    private val storeService: StoreService,
 ) {
 
 
@@ -49,7 +50,15 @@ class StoreController(
 
     @PostMapping("/like")
     fun likeStore(@RequestBody likeRequest: LikeRequest): ResponseEntity<Any> {
-        storeService.saveLike(likeRequest.id, likeRequest.userId)
+        storeService.saveLike(likeRequest.uuid, likeRequest.userId)
+        return ResponseEntity.ok().body(true)
+    }
+
+
+    @PostMapping("/like2")
+    fun likeStore2(@RequestBody likeRequest: LikeRequest): ResponseEntity<Any> {
+
+        storeService.saveLike2(likeRequest.uuid, likeRequest.userId)
         return ResponseEntity.ok().body(true)
     }
 
