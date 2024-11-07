@@ -54,12 +54,22 @@ class StoreController(
         return ResponseEntity.ok().body(true)
     }
 
-
+    //TODO: 사용자 ip 받기
     @PostMapping("/like2")
-    fun likeStore2(@RequestBody likeRequest: LikeRequest): ResponseEntity<Any> {
+    fun likeStore2(@RequestBody likeRequest: LikeRequest): ResponseEntity<CustomApiResponse<Boolean>> {
 
-        storeService.saveLike2(likeRequest.uuid, likeRequest.userId)
-        return ResponseEntity.ok().body(true)
+        return ResponseEntity.ok()
+            .body(
+                CustomApiResponse.success(
+                    storeService.saveLike2(likeRequest.uuid, likeRequest.userId)
+                )
+            )
+    }
+
+    //TODO: 사용자 ip 받기
+    @PostMapping("/views")
+    fun saveStoreViewsCnt() {
+
     }
 
 }
