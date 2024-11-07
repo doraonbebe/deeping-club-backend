@@ -2,7 +2,6 @@ package com.category.ranking.rankingservice.storeDomain.adapter.api
 
 
 import com.category.ranking.rankingservice.common.adapter.api.CustomApiResponse
-import com.category.ranking.rankingservice.common.service.RedisService
 import com.category.ranking.rankingservice.storeDomain.adapter.api.`in`.LikeRequest
 import com.category.ranking.rankingservice.storeDomain.adapter.api.out.StoreResponse
 import com.category.ranking.rankingservice.storeDomain.service.StoreService
@@ -50,6 +49,7 @@ class StoreController(
 
     @PostMapping("/like")
     fun likeStore(@RequestBody likeRequest: LikeRequest): ResponseEntity<Any> {
+
         storeService.saveLike(likeRequest.uuid, likeRequest.userId)
         return ResponseEntity.ok().body(true)
     }
