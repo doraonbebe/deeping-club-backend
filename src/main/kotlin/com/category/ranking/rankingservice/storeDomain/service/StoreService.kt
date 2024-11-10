@@ -1,5 +1,6 @@
 package com.category.ranking.rankingservice.storeDomain.service
 
+import com.category.ranking.rankingservice.common.enums.RedisKeys
 import com.category.ranking.rankingservice.common.service.RedisService
 import com.category.ranking.rankingservice.storeDomain.adapter.api.out.StoreResponse
 import com.category.ranking.rankingservice.storeDomain.adapter.elasticsearch.ElasticSearchCustomRepository
@@ -36,7 +37,7 @@ class StoreService(
     }
 
     fun saveLike2(uuid: String, userId: Long): Boolean {
-        val likeKey = "store_likes:$uuid"
+        val likeKey = "${RedisKeys.STORE_LIKES.value}$uuid"
         val hasLiked = redisService.isMemberOfSet(likeKey, userId.toString())
 
         if (hasLiked == true) {
@@ -49,7 +50,7 @@ class StoreService(
     }
 
     fun saveView(clientIp: String, uuid: String): Boolean {
-        val viewKey = "views_$uuid"
+        val viewKey = "${RedisKeys.STORE_VIEWS.value}$uuid"
         redisService.addValueToSet(viewKey, clientIp)
         return true
     }
@@ -60,8 +61,13 @@ class StoreService(
         return storeRepo.findAll()
     }
 
-    fun findByUuid(uuid: String): Store? {
-        return storeRepo.findByUuid(uuid)
+    fun findByUuids(uuids: List<String>): List<Store> {
+        return storeRepo.findByUuidIn(uuids)
+    }
+
+    @Transactional
+    fun updateStoreViewCnt(store: Store) {
+        storeRepo.save(store)
     }
 
     fun saveLikeAll(store: Store, userIds: List<Long>) {

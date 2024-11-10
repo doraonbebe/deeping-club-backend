@@ -28,10 +28,10 @@ class Store(
     val longitude: Double,
 
     @Column(name = "views_cnt", nullable = false, columnDefinition = "INT DEFAULT 0")
-    val viewsCnt: Int,
+    var viewsCnt: Int,
 
     @Column(name = "likes_cnt", nullable = false, columnDefinition = "INT DEFAULT 0")
-    val likesCnt: Int,
+    var likesCnt: Int,
 
     @Column(name = "uuid", nullable = false, unique = true)
     val uuid: String = UUID.randomUUID().toString(),
@@ -41,5 +41,9 @@ class Store(
     val likes: MutableList<Likes> = mutableListOf()
 
 ) {
+
+    fun increaseViewCnt(viewsCnt: Int){
+        this.viewsCnt += viewsCnt
+    }
 
 }

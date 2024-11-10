@@ -73,7 +73,6 @@ class StoreController(
         @PathVariable uuid: String,
         request: HttpServletRequest
     ): ResponseEntity<CustomApiResponse<Boolean>> {
-        println(uuid)
         val clientIp = request.getClientIp()
         return ResponseEntity.ok()
             .body(
