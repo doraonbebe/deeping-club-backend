@@ -3,6 +3,7 @@ package com.category.ranking.rankingservice.storeDomain.adapter.api
 
 import com.category.ranking.rankingservice.common.adapter.api.CustomApiResponse
 import com.category.ranking.rankingservice.common.service.RedisService
+import com.category.ranking.rankingservice.common.utils.getClientIp
 import com.category.ranking.rankingservice.storeDomain.adapter.api.`in`.LikeRequest
 import com.category.ranking.rankingservice.storeDomain.adapter.api.out.StoreResponse
 import com.category.ranking.rankingservice.storeDomain.service.StoreService
@@ -11,6 +12,7 @@ import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
+import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -54,7 +56,7 @@ class StoreController(
         return ResponseEntity.ok().body(true)
     }
 
-    //TODO: 사용자 ip 받기
+    //TODO: 좋아요는 로그인 한 유저만.
     @PostMapping("/like2")
     fun likeStore2(@RequestBody likeRequest: LikeRequest): ResponseEntity<CustomApiResponse<Boolean>> {
 
@@ -66,10 +68,19 @@ class StoreController(
             )
     }
 
-    //TODO: 사용자 ip 받기
-    @PostMapping("/views")
-    fun saveStoreViewsCnt() {
-
+    @PostMapping("/{uuid}/views")
+    fun saveStoreView(
+        @PathVariable uuid: String,
+        request: HttpServletRequest
+    ): ResponseEntity<CustomApiResponse<Boolean>> {
+        println(uuid)
+        val clientIp = request.getClientIp()
+        return ResponseEntity.ok()
+            .body(
+                CustomApiResponse.success(
+                    storeService.saveView(clientIp, uuid)
+                )
+            )
     }
 
 }

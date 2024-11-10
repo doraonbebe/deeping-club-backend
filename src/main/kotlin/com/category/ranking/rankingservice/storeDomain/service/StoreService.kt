@@ -47,6 +47,12 @@ class StoreService(
         }
     }
 
+    fun saveView(clientIp: String, uuid: String): Boolean {
+        val viewKey = "views_$uuid"
+        redisService.addValueToSet(viewKey, clientIp)
+        return true
+    }
+
     @Transactional(readOnly = true)
     fun findAllStore(): List<Store> {
         return storeRepo.findAll()
