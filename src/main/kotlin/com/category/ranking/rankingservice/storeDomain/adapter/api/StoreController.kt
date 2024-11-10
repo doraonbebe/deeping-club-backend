@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/api/v1/stores")
 class StoreController(
-    private val storeService: StoreService
+    private val storeService: StoreService,
 ) {
 
 
@@ -49,8 +49,27 @@ class StoreController(
 
     @PostMapping("/like")
     fun likeStore(@RequestBody likeRequest: LikeRequest): ResponseEntity<Any> {
-        storeService.saveLike(likeRequest.id, likeRequest.userId)
+
+        storeService.saveLike(likeRequest.uuid, likeRequest.userId)
         return ResponseEntity.ok().body(true)
+    }
+
+    //TODO: 사용자 ip 받기
+    @PostMapping("/like2")
+    fun likeStore2(@RequestBody likeRequest: LikeRequest): ResponseEntity<CustomApiResponse<Boolean>> {
+
+        return ResponseEntity.ok()
+            .body(
+                CustomApiResponse.success(
+                    storeService.saveLike2(likeRequest.uuid, likeRequest.userId)
+                )
+            )
+    }
+
+    //TODO: 사용자 ip 받기
+    @PostMapping("/views")
+    fun saveStoreViewsCnt() {
+
     }
 
 }

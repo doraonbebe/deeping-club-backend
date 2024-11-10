@@ -26,6 +26,20 @@ class Store(
     @Column(name = "longitude")
     val longitude: Double,
 
+    @Column(name = "views_cnt", nullable = false, columnDefinition = "INT DEFAULT 0")
+    val viewsCnt: Int,
+
+    @Column(name = "likes_cnt", nullable = false, columnDefinition = "INT DEFAULT 0")
+    val likesCnt: Int,
+
+    @Column(name = "uuid", nullable = false, unique = true)
+    val uuid: String = UUID.randomUUID().toString(),
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "store", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    val likes: MutableList<Likes> = mutableListOf()
+
+
     @JsonManagedReference
     @OneToMany(mappedBy = "store", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     val likes: MutableList<Likes> = mutableListOf()
