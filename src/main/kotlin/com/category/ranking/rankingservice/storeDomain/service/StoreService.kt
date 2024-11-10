@@ -16,8 +16,7 @@ class StoreService(
     private val elasticSearchCustomRepo: ElasticSearchCustomRepository,
     private val storeRepo: StoreRepository,
     private val likesRepo: LikesRepository,
-    private val redisService: RedisService
-    private val likesRepo: LikesRepository
+    private val redisService: RedisService,
 
 ) {
 
