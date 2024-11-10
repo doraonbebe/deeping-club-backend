@@ -55,6 +55,7 @@ class StoreController(
         return ResponseEntity.ok().body(true)
     }
 
+
     //TODO: 좋아요는 로그인 한 유저만.
     @PostMapping("/like2")
     fun likeStore2(@RequestBody likeRequest: LikeRequest): ResponseEntity<CustomApiResponse<Boolean>> {
