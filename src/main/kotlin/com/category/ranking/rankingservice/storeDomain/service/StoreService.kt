@@ -55,24 +55,22 @@ class StoreService(
         return true
     }
 
-
     @Transactional(readOnly = true)
     fun findAllStore(): List<Store> {
         return storeRepo.findAll()
     }
 
+
+    @Transactional(readOnly = true)
     fun findByUuids(uuids: List<String>): List<Store> {
         return storeRepo.findByUuidIn(uuids)
     }
 
+
     @Transactional
-    fun updateStoreViewCnt(store: Store) {
-        storeRepo.save(store)
+    fun saveAllStore(stores: List<Store>) {
+        storeRepo.saveAll(stores)
     }
 
-    fun saveLikeAll(store: Store, userIds: List<Long>) {
-//        Likes.createLikes()
-//        likesRepo.saveAll();
-    }
 
 }

@@ -4,7 +4,10 @@ import com.fasterxml.jackson.annotation.JsonBackReference
 import jakarta.persistence.*
 
 @Entity
-@Table(name = "likes")
+@Table(
+    name = "likes",
+    uniqueConstraints = [UniqueConstraint(columnNames = ["store_id", "user_id"])]
+)
 class Likes(
 
     @Id
@@ -23,6 +26,11 @@ class Likes(
     fun addStore() {
         store.likes.add(this)
     }
+
+    override fun toString(): String {
+        return "Likes(id=$id, store=$store, userId=$userId)"
+    }
+
     companion object {
         fun createLike(store: Store, userId: Long): Likes {
             val like = Likes(
@@ -33,5 +41,7 @@ class Likes(
             return like
         }
     }
+
+
 }
 

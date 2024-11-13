@@ -38,12 +38,25 @@ class Store(
 
     @JsonManagedReference
     @OneToMany(mappedBy = "store", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
-    val likes: MutableList<Likes> = mutableListOf()
+    val likes: MutableSet<Likes> = HashSet()
 
 ) {
 
+    fun addLike(userId: Long){
+        val like = Likes.createLike(this, userId)
+        likes.add(like)
+    }
+
+    fun addAllLike(userIds: List<Long>){
+        userIds.forEach { addLike(it) }
+    }
+
     fun increaseViewCnt(viewsCnt: Int){
         this.viewsCnt += viewsCnt
+    }
+
+    override fun toString(): String {
+        return "Store(id=$id, name=$name, category='$category', address='$address', latitude=$latitude, longitude=$longitude, viewsCnt=$viewsCnt, likesCnt=$likesCnt, uuid='$uuid')"
     }
 
 }
