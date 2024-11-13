@@ -21,9 +21,11 @@ class RedisService(
         return redisTemplate.opsForSet().isMember(key, value)
     }
 
+
     fun getValueCntOfSet(key: String): Long? {
        return redisTemplate.opsForSet().size(key)
     }
+
 
     fun getValuesToSet(key: String): Set<String>? {
         return redisTemplate.opsForSet().members(key)
@@ -40,6 +42,11 @@ class RedisService(
         }
         return resultMap
     }
+
+    fun getValuesToSet(key: String): MutableSet<String>? {
+        return redisTemplate.opsForSet().members(key)
+    }
+
 
     fun countValuesByKeys(pattern: String): Map<String, Long> {
         val keys = getKeysByPattern(pattern)

@@ -60,6 +60,7 @@ class StoreService(
         return storeRepo.findAll()
     }
 
+
     @Transactional(readOnly = true)
     fun findByUuids(uuids: List<String>): List<Store> {
         return storeRepo.findByUuidIn(uuids)

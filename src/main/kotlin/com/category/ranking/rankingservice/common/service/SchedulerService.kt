@@ -59,5 +59,6 @@ class SchedulerService(
         }
 
         storeService.saveAllStore(stores)
+
     }
 }
