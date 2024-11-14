@@ -9,8 +9,6 @@ class RedisService(
     private val redisTemplate: RedisTemplate<String, String>
 ) {
 
-
-
     fun addValueToSet(key: String, value: String) {
         redisTemplate.opsForSet().add(key, value)
     }
@@ -23,17 +21,32 @@ class RedisService(
         return redisTemplate.opsForSet().isMember(key, value)
     }
 
-    fun removeKeys(keys: Set<String>) {
-        redisTemplate.delete(keys)
-    }
 
     fun getValueCntOfSet(key: String): Long? {
        return redisTemplate.opsForSet().size(key)
     }
 
+
+    fun getValuesToSet(key: String): Set<String>? {
+        return redisTemplate.opsForSet().members(key)
+    }
+
+    fun getAllValuesOfKeys(pattern: String): Map<String, Set<String>?> {
+        val keys = getKeysByPattern(pattern)
+        if (keys.isNullOrEmpty()) return emptyMap()
+
+        val resultMap = mutableMapOf<String, Set<String>?>()
+        for (key in keys) {
+            val listValues = getValuesToSet(key)
+            resultMap[key] = listValues
+        }
+        return resultMap
+    }
+
     fun getValuesToSet(key: String): MutableSet<String>? {
         return redisTemplate.opsForSet().members(key)
     }
+
 
     fun countValuesByKeys(pattern: String): Map<String, Long> {
         val keys = getKeysByPattern(pattern)
