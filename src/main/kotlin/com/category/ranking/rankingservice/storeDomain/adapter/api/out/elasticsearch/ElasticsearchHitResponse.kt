@@ -1,4 +1,4 @@
-package com.category.ranking.rankingservice.storeDomain.adapter.api.out
+package com.category.ranking.rankingservice.storeDomain.adapter.api.out.elasticsearch
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 

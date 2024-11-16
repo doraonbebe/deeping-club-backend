@@ -4,7 +4,7 @@ package com.category.ranking.rankingservice.storeDomain.adapter.api
 import com.category.ranking.rankingservice.common.adapter.api.CustomApiResponse
 import com.category.ranking.rankingservice.common.utils.getClientIp
 import com.category.ranking.rankingservice.storeDomain.adapter.api.`in`.LikeRequest
-import com.category.ranking.rankingservice.storeDomain.adapter.api.out.StoreResponse
+import com.category.ranking.rankingservice.storeDomain.adapter.api.out.elasticsearch.StoreResponse
 import com.category.ranking.rankingservice.storeDomain.service.StoreService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -12,6 +12,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.servlet.http.HttpServletRequest
+import jakarta.validation.constraints.Max
+import jakarta.validation.constraints.Min
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -41,10 +43,22 @@ class StoreController(
     fun searchStoresByLocation(
         @Parameter(description = "위도", example = "37.5482359") @RequestParam lat: Double,
         @Parameter(description = "경도", example = "126.9397607") @RequestParam lon: Double,
-        @Parameter(description = "검색 반경 (단위 : m)", example = "1000") @RequestParam radius: Int
+        @Parameter(description = "검색 반경 (단위 : m)", example = "1000") @RequestParam(defaultValue = "300") @Min(300) @Max(1000) radius: Int
     ): ResponseEntity<CustomApiResponse<List<StoreResponse>>> {
 
         val stores = storeService.searchStoresByLocation(lat, lon, radius)
+        return ResponseEntity.ok(CustomApiResponse.success(stores))
+
+    }
+
+    @GetMapping("/search/location/limit")
+    fun searchStoresByLocationLimit(
+        @Parameter(description = "위도", example = "37.5482359") @RequestParam lat: Double,
+        @Parameter(description = "경도", example = "126.9397607") @RequestParam lon: Double,
+        @Parameter(description = "검색 반경 (단위 : m)", example = "1000") @RequestParam(defaultValue = "300") @Min(300) @Max(1000) radius: Int,
+        @Parameter(description = "상점 검색 수", example = "5") @RequestParam(defaultValue = "5") @Min(5) @Max(10) limit: Int,
+    ): ResponseEntity<CustomApiResponse<List<StoreResponse>>> {
+        val stores = storeService.searchStoresByLocationWithLimit(lat, lon, radius, limit)
         return ResponseEntity.ok(CustomApiResponse.success(stores))
 
     }
