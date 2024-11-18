@@ -9,6 +9,7 @@ import com.category.ranking.rankingservice.storeDomain.domain.Likes
 import com.category.ranking.rankingservice.storeDomain.domain.Store
 import com.category.ranking.rankingservice.storeDomain.repository.LikesRepository
 import com.category.ranking.rankingservice.storeDomain.repository.StoreJPARepository
+import jakarta.persistence.EntityNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -76,8 +77,8 @@ class StoreService(
     }
 
     @Transactional(readOnly = true)
-    fun findAllStore(): List<Store> {
-        return storeJPARepo.findAll()
+    fun findByUuid(uuid: String): Store {
+        return storeJPARepo.findByUuid(uuid) ?: throw EntityNotFoundException("Store $uuid not found")
     }
 
 
