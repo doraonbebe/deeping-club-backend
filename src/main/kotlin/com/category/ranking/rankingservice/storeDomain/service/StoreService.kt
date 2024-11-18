@@ -2,12 +2,13 @@ package com.category.ranking.rankingservice.storeDomain.service
 
 import com.category.ranking.rankingservice.common.enums.RedisKeys
 import com.category.ranking.rankingservice.common.service.RedisService
-import com.category.ranking.rankingservice.storeDomain.adapter.api.out.StoreResponse
+import com.category.ranking.rankingservice.storeDomain.adapter.api.out.elasticsearch.StoreResponse
 import com.category.ranking.rankingservice.storeDomain.adapter.elasticsearch.ElasticSearchCustomRepository
+import com.category.ranking.rankingservice.storeDomain.adapter.infrastructure.StoreRepository
 import com.category.ranking.rankingservice.storeDomain.domain.Likes
 import com.category.ranking.rankingservice.storeDomain.domain.Store
-import com.category.ranking.rankingservice.storeDomain.infrastructure.repository.LikesRepository
-import com.category.ranking.rankingservice.storeDomain.infrastructure.repository.StoreRepository
+import com.category.ranking.rankingservice.storeDomain.repository.LikesRepository
+import com.category.ranking.rankingservice.storeDomain.repository.StoreJPARepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -15,19 +16,38 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class StoreService(
     private val elasticSearchCustomRepo: ElasticSearchCustomRepository,
-    private val storeRepo: StoreRepository,
+    private val storeJPARepo: StoreJPARepository,
     private val likesRepo: LikesRepository,
     private val redisService: RedisService,
+    private val storeRepo: StoreRepository,
 
-) {
+    ) {
+
+    fun searchStoresByLocationWithLimit(lat: Double, lon: Double, radius: Int, limit: Int): List<StoreResponse> {
+        val recommendedStoresLimit = 3
+
+        val recommendedStores = elasticSearchCustomRepo.findStoresByRadiusLimit(lat, lon, radius, recommendedStoresLimit)
+        val recommendedStoresCnt = recommendedStores.size
+
+        val topLikedStoresLimit = limit - recommendedStoresCnt
+        val uuids = recommendedStores.map { it.uuid }
+        val topLikedStores = storeRepo.findTopStoresByLikeCnt(uuids, topLikedStoresLimit)
+
+        val convertedTopLikedStores = topLikedStores.map { it.toStoreResponse() }
+
+        val top5Stores = recommendedStores + convertedTopLikedStores
+        return top5Stores
+    }
+
+
 
     fun searchStoresByLocation(lat: Double, lon: Double, radius: Int): List<StoreResponse> {
-        return elasticSearchCustomRepo.findStoresByLocationAndDistance(lat, lon, radius)
+        return elasticSearchCustomRepo.findStoresByRadius(lat, lon, radius)
     }
 
     fun saveLike(uuid: String, userId: Long) {
 
-        storeRepo.findByUuid(uuid)?.let { store ->
+        storeJPARepo.findByUuid(uuid)?.let { store ->
             val existsLike = likesRepo.existsByStoreAndUserId(store, userId)
             if (existsLike) return
 
@@ -57,19 +77,19 @@ class StoreService(
 
     @Transactional(readOnly = true)
     fun findAllStore(): List<Store> {
-        return storeRepo.findAll()
+        return storeJPARepo.findAll()
     }
 
 
     @Transactional(readOnly = true)
     fun findByUuids(uuids: List<String>): List<Store> {
-        return storeRepo.findByUuidIn(uuids)
+        return storeJPARepo.findByUuidIn(uuids)
     }
 
 
     @Transactional
     fun saveAllStore(stores: List<Store>) {
-        storeRepo.saveAll(stores)
+        storeJPARepo.saveAll(stores)
     }
 
 
