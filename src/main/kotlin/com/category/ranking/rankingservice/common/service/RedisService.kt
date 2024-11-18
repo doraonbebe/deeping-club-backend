@@ -26,11 +26,6 @@ class RedisService(
        return redisTemplate.opsForSet().size(key)
     }
 
-
-    fun getValuesToSet(key: String): Set<String>? {
-        return redisTemplate.opsForSet().members(key)
-    }
-
     fun getAllValuesOfKeys(pattern: String): Map<String, Set<String>?> {
         val keys = getKeysByPattern(pattern)
         if (keys.isNullOrEmpty()) return emptyMap()

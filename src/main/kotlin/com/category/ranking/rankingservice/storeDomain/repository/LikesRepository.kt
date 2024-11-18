@@ -1,4 +1,4 @@
-package com.category.ranking.rankingservice.storeDomain.infrastructure.repository
+package com.category.ranking.rankingservice.storeDomain.repository
 
 import com.category.ranking.rankingservice.storeDomain.domain.Likes
 import com.category.ranking.rankingservice.storeDomain.domain.Store

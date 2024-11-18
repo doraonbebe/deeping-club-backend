@@ -1,4 +1,4 @@
-package com.category.ranking.rankingservice.storeDomain.infrastructure.repository
+package com.category.ranking.rankingservice.storeDomain.repository
 
 import com.category.ranking.rankingservice.storeDomain.esDomain.ElasticStore
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
