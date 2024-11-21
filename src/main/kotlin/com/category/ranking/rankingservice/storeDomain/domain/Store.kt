@@ -38,7 +38,11 @@ class Store(
 
     @JsonManagedReference
     @OneToMany(mappedBy = "store", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
-    val likes: MutableSet<Likes> = HashSet()
+    val likes: MutableSet<Likes> = HashSet(),
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "store", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    val reviews: MutableList<Reviews> = mutableListOf()
 
 ) {
 
@@ -53,6 +57,22 @@ class Store(
 
     fun increaseViewCnt(viewsCnt: Int){
         this.viewsCnt += viewsCnt
+    }
+
+    fun addReview(
+        userId: Long,
+        status: Status,
+        content: String,
+        rating: Double
+    ){
+        val review = Reviews.createReview(
+            this,
+            userId,
+            status,
+            content,
+            rating
+        )
+        reviews.add(review);
     }
 
     override fun toString(): String {
