@@ -1,5 +1,6 @@
 package com.category.ranking.rankingservice.storeDomain.domain
 
+import com.fasterxml.jackson.annotation.JsonBackReference
 import com.fasterxml.jackson.annotation.JsonManagedReference
 import jakarta.persistence.*
 import java.util.*
@@ -12,11 +13,13 @@ class Store(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long,
 
+    @JsonBackReference
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", nullable = false)
+    val category: Category,
+
     @Column(name = "name")
     val name: String? = "",
-
-    @Column(name = "category")
-    val category: String,
 
     @Column(name = "address")
     val address: String,
