@@ -4,7 +4,9 @@ package com.category.ranking.rankingservice.storeDomain.adapter.api
 import com.category.ranking.rankingservice.common.adapter.api.CustomApiResponse
 import com.category.ranking.rankingservice.common.utils.getClientIp
 import com.category.ranking.rankingservice.storeDomain.adapter.api.`in`.LikeRequest
+import com.category.ranking.rankingservice.storeDomain.adapter.api.`in`.StoreReviewRequest
 import com.category.ranking.rankingservice.storeDomain.adapter.api.out.elasticsearch.StoreResponse
+import com.category.ranking.rankingservice.storeDomain.service.StoreReviewsService
 import com.category.ranking.rankingservice.storeDomain.service.StoreService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/api/v1/stores")
 class StoreController(
     private val storeService: StoreService,
+    private val storeReviewsService: StoreReviewsService
 ) {
 
 
@@ -94,6 +97,16 @@ class StoreController(
                     storeService.saveView(clientIp, uuid)
                 )
             )
+    }
+
+    /* 로그인 한 유저만 리뷰를 작성할 수 있는지 기획 확정 필요. 만약 로그인 하지 않은 유저도 작성할 수 있다면, 수정, 삭제는? */
+
+    @PostMapping("/{uuid}/review")
+    fun saveStoreReview(
+        @PathVariable uuid: String,
+        reviewRequest: StoreReviewRequest
+    ){
+        storeReviewsService.saveStoreReview(uuid, reviewRequest)
     }
 
 }
