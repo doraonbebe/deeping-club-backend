@@ -6,12 +6,9 @@ import com.category.ranking.rankingservice.storeDomain.adapter.api.out.database.
 import com.category.ranking.rankingservice.storeDomain.adapter.api.out.elasticsearch.StoreResponse
 import com.category.ranking.rankingservice.storeDomain.adapter.elasticsearch.ElasticSearchCustomRepository
 import com.category.ranking.rankingservice.storeDomain.adapter.infrastructure.StoreRepository
-import com.category.ranking.rankingservice.storeDomain.domain.Likes
 import com.category.ranking.rankingservice.storeDomain.domain.Store
 import com.category.ranking.rankingservice.storeDomain.repository.CategoryJPARepository
-import com.category.ranking.rankingservice.storeDomain.repository.LikesRepository
 import com.category.ranking.rankingservice.storeDomain.repository.StoreJPARepository
-import jakarta.persistence.EntityNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -21,7 +18,6 @@ class StoreService(
     private val elasticSearchCustomRepo: ElasticSearchCustomRepository,
     private val storeJPARepo: StoreJPARepository,
     private val categoryJPARepo: CategoryJPARepository,
-    private val likesRepo: LikesRepository,
     private val redisService: RedisService,
     private val storeRepo: StoreRepository,
 
@@ -59,29 +55,6 @@ class StoreService(
         }
     }
 
-    fun saveLike(uuid: String, userId: Long) {
-
-        storeJPARepo.findByUuid(uuid)?.let { store ->
-            val existsLike = likesRepo.existsByStoreAndUserId(store, userId)
-            if (existsLike) return
-
-            likesRepo.save(Likes.createLike(store, userId))
-
-        }
-    }
-
-    fun saveLike2(uuid: String, userId: Long): Boolean {
-        val likeKey = "${RedisKeys.STORE_LIKES.value}$uuid"
-        val hasLiked = redisService.isMemberOfSet(likeKey, userId.toString())
-
-        if (hasLiked == true) {
-            redisService.removeValueSet(likeKey, userId.toString())
-            return true;
-        } else {
-            redisService.addValueToSet(likeKey, userId.toString())
-            return false
-        }
-    }
 
     fun saveView(clientIp: String, uuid: String): Boolean {
         val viewKey = "${RedisKeys.STORE_VIEWS.value}$uuid"
@@ -90,8 +63,8 @@ class StoreService(
     }
 
     @Transactional(readOnly = true)
-    fun findByUuid(uuid: String): Store {
-        return storeJPARepo.findByUuid(uuid) ?: throw EntityNotFoundException("Store $uuid not found")
+    fun findStoreByUuid(uuid: String): Store? {
+        return storeJPARepo.findByUuid(uuid)
     }
 
 

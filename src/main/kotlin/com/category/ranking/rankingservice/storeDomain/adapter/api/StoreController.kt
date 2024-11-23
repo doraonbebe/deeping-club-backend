@@ -7,6 +7,7 @@ import com.category.ranking.rankingservice.storeDomain.adapter.api.`in`.LikeRequ
 import com.category.ranking.rankingservice.storeDomain.adapter.api.`in`.StoreReviewRequest
 import com.category.ranking.rankingservice.storeDomain.adapter.api.out.database.CategoryResponse
 import com.category.ranking.rankingservice.storeDomain.adapter.api.out.elasticsearch.StoreResponse
+import com.category.ranking.rankingservice.storeDomain.service.StoreLikesService
 import com.category.ranking.rankingservice.storeDomain.service.StoreReviewsService
 import com.category.ranking.rankingservice.storeDomain.service.StoreService
 import io.swagger.v3.oas.annotations.Operation
@@ -25,7 +26,8 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/api/v1/stores")
 class StoreController(
     private val storeService: StoreService,
-    private val storeReviewsService: StoreReviewsService
+    private val storeReviewsService: StoreReviewsService,
+    private val storeLikesService: StoreLikesService,
 ) {
 
 
@@ -79,7 +81,7 @@ class StoreController(
 
     @PostMapping("/like")
     fun likeStore(@RequestBody likeRequest: LikeRequest): ResponseEntity<Any> {
-        storeService.saveLike(likeRequest.uuid, likeRequest.userId)
+        storeLikesService.saveLike(likeRequest.uuid, likeRequest.userId)
         return ResponseEntity.ok().body(true)
     }
 
@@ -91,7 +93,7 @@ class StoreController(
         return ResponseEntity.ok()
             .body(
                 CustomApiResponse.success(
-                    storeService.saveLike2(likeRequest.uuid, likeRequest.userId)
+                    storeLikesService.saveLike2(likeRequest.uuid, likeRequest.userId)
                 )
             )
     }

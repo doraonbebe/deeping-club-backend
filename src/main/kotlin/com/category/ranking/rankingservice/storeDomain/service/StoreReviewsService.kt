@@ -4,6 +4,7 @@ import com.category.ranking.rankingservice.storeDomain.adapter.api.`in`.StoreRev
 import com.category.ranking.rankingservice.storeDomain.domain.Reviews
 import com.category.ranking.rankingservice.storeDomain.domain.Status
 import com.category.ranking.rankingservice.storeDomain.repository.ReviewsJPARepository
+import jakarta.persistence.EntityNotFoundException
 import org.springframework.stereotype.Service
 
 @Service
@@ -17,7 +18,7 @@ class StoreReviewsService(
         val rating = reviewRequest.rating
         val content = reviewRequest.content
 
-        val store = storeService.findByUuid(uuid)
+        val store = storeService.findStoreByUuid(uuid) ?: throw EntityNotFoundException("Store $uuid not found")
 
         reviewJPARepo.save(
             Reviews.createReview(
