@@ -17,7 +17,8 @@ data class StoreResponse(
             category = this.category,
             location = GeoPoint(this.latitude, this.longitude),
             address = this.address,
-            uuid = this.uuid
+            uuid = this.uuid,
+            distance  = 0
         )
     }
 }

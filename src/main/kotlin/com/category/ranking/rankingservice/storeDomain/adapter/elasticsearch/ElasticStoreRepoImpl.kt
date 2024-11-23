@@ -23,13 +23,18 @@ class ElasticStoreRepoImpl(
 
     val indexName = "store"
 
-    override fun findStoresByRadiusAndCategory(lat: Double, lon: Double, radius: Int, category: String): List<StoreResponse> {
+    override fun findStoresByRadiusAndCategory(
+        lat: Double,
+        lon: Double,
+        radius: Int,
+        category: String
+    ): List<StoreResponse> {
         val query = findStoreByRadiusAndCategoryQuery(lat, lon, radius, category)
         return searchStores(query)
     }
 
     override fun findStoresByRadiusLimit(lat: Double, lon: Double, radius: Int, limit: Int): List<StoreResponse> {
-        val query =  findStoreByRadiusLimitQuery(lat, lon, radius, limit)
+        val query = findStoreByRadiusLimitQuery(lat, lon, radius, limit)
         return searchStores(query)
     }
 
@@ -46,7 +51,10 @@ class ElasticStoreRepoImpl(
             object : TypeReference<ElasticsearchResponse<StoreResponse>>() {}
         )
 
-        return searchResponse.hits.hits.map { it._source }
+        return searchResponse.hits.hits.map {hit ->
+            val sort = (hit.sort?.firstOrNull() as Double).toInt()
+            hit._source.copy(distance = sort)
+        }
     }
 
     private fun findStoreByRadiusLimitQuery(lat: Double, lon: Double, radius: Int, size: Int): String {
@@ -65,30 +73,56 @@ class ElasticStoreRepoImpl(
                         }
                     }
                 }
+            },
+            "sort": [
+                {
+                  "_geo_distance": {
+                        "location": {
+                          "lat": ${lat},
+                          "lon": ${lon}
+                    },
+                    "order": "asc",
+                    "unit": "m"
+                }
             }
-        }
+        ]
+    }
     """.trimIndent()
     }
 
     private fun findStoreByRadiusAndCategoryQuery(lat: Double, lon: Double, radius: Int, category: String?): String {
-        val categoryClause = category?.let { "\"term\": { $it }," } ?: ""
+        val categoryClause = if (category.isNullOrBlank()) "" else "{ \"term\": { \"category\": \"$category\" } },"
         return """
         {
             "query": {
                 "bool": {
-                    "filter": {
+                    "filter": [
                         $categoryClause
-                        "geo_distance": {
-                            "distance": "$radius}m",
-                            "location": {
-                                "lat": $lat,
-                                "lon": $lon
+                        {
+                            "geo_distance": {
+                                "distance": "${radius}m",
+                                "location": {
+                                    "lat": $lat,
+                                    "lon": $lon
                             }
                         }
                     }
-                }
+                ]
             }
+        },
+        "sort": [
+            {
+              "_geo_distance": {
+                    "location": {
+                      "lat": ${lat},
+                      "lon": ${lon}
+                },
+                "order": "asc",
+                "unit": "m"
+          }
         }
+      ]
+    }
     """.trimIndent()
     }
 

@@ -7,5 +7,6 @@ data class StoreResponse(
     val category: String,
     val location: GeoPoint,
     val address: String,
-    val uuid: String
+    val uuid: String,
+    val distance : Int
 )
