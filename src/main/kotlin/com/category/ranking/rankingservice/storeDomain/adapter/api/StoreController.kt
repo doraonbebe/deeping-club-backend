@@ -5,6 +5,7 @@ import com.category.ranking.rankingservice.common.adapter.api.CustomApiResponse
 import com.category.ranking.rankingservice.common.utils.getClientIp
 import com.category.ranking.rankingservice.storeDomain.adapter.api.`in`.LikeRequest
 import com.category.ranking.rankingservice.storeDomain.adapter.api.`in`.StoreReviewRequest
+import com.category.ranking.rankingservice.storeDomain.adapter.api.out.database.CategoryResponse
 import com.category.ranking.rankingservice.storeDomain.adapter.api.out.elasticsearch.StoreResponse
 import com.category.ranking.rankingservice.storeDomain.service.StoreReviewsService
 import com.category.ranking.rankingservice.storeDomain.service.StoreService
@@ -29,8 +30,8 @@ class StoreController(
 
 
     @Operation(
-        summary = "위치 기반 상점 검색 API",
-        description = "위치(lat, lon)의 반경(radius)에 기반하여 상점을 검색합니다.",
+        summary = "위치 기반 상점 목록 검색 API",
+        description = "위치(lat, lon)의 반경(radius)과 카테고리를 포함하여 상점을 검색합니다.",
     )
     @ApiResponses(value = [
         ApiResponse(
@@ -46,14 +47,18 @@ class StoreController(
     fun searchStoresByLocation(
         @Parameter(description = "위도", example = "37.5482359") @RequestParam lat: Double,
         @Parameter(description = "경도", example = "126.9397607") @RequestParam lon: Double,
-        @Parameter(description = "검색 반경 (단위 : m)", example = "1000") @RequestParam(defaultValue = "300") @Min(300) @Max(1000) radius: Int
+        @Parameter(description = "카테고리", example = "CAFE") @RequestParam(required = false) category: String,
+        @Parameter(description = "검색 반경 (단위 : m)", example = "1000") @RequestParam(defaultValue = "300") @Min(300) @Max(1000) radius: Int,
     ): ResponseEntity<CustomApiResponse<List<StoreResponse>>> {
-
-        val stores = storeService.searchStoresByLocation(lat, lon, radius)
+        val stores = storeService.searchStoresByLocation(lat, lon, radius, category)
         return ResponseEntity.ok(CustomApiResponse.success(stores))
 
     }
 
+    @Operation(
+        summary = "위치 기반 Top 5 상점 검색 API",
+        description = "위치(lat, lon)의 반경(radius)에 기반하여 상점을 검색합니다.",
+    )
     @GetMapping("/search/location/limit")
     fun searchStoresByLocationLimit(
         @Parameter(description = "위도", example = "37.5482359") @RequestParam lat: Double,
@@ -64,6 +69,12 @@ class StoreController(
         val stores = storeService.searchStoresByLocationWithLimit(lat, lon, radius, limit)
         return ResponseEntity.ok(CustomApiResponse.success(stores))
 
+    }
+
+    @GetMapping("/category")
+    fun findStoreCategory(): ResponseEntity<CustomApiResponse<List<CategoryResponse>>> {
+        val category = storeService.findAllCategory();
+        return ResponseEntity.ok(CustomApiResponse.success(category))
     }
 
     @PostMapping("/like")

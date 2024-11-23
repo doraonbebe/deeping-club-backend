@@ -2,11 +2,13 @@ package com.category.ranking.rankingservice.storeDomain.service
 
 import com.category.ranking.rankingservice.common.enums.RedisKeys
 import com.category.ranking.rankingservice.common.service.RedisService
+import com.category.ranking.rankingservice.storeDomain.adapter.api.out.database.CategoryResponse
 import com.category.ranking.rankingservice.storeDomain.adapter.api.out.elasticsearch.StoreResponse
 import com.category.ranking.rankingservice.storeDomain.adapter.elasticsearch.ElasticSearchCustomRepository
 import com.category.ranking.rankingservice.storeDomain.adapter.infrastructure.StoreRepository
 import com.category.ranking.rankingservice.storeDomain.domain.Likes
 import com.category.ranking.rankingservice.storeDomain.domain.Store
+import com.category.ranking.rankingservice.storeDomain.repository.CategoryJPARepository
 import com.category.ranking.rankingservice.storeDomain.repository.LikesRepository
 import com.category.ranking.rankingservice.storeDomain.repository.StoreJPARepository
 import jakarta.persistence.EntityNotFoundException
@@ -18,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional
 class StoreService(
     private val elasticSearchCustomRepo: ElasticSearchCustomRepository,
     private val storeJPARepo: StoreJPARepository,
+    private val categoryJPARepo: CategoryJPARepository,
     private val likesRepo: LikesRepository,
     private val redisService: RedisService,
     private val storeRepo: StoreRepository,
@@ -42,8 +45,18 @@ class StoreService(
 
 
 
-    fun searchStoresByLocation(lat: Double, lon: Double, radius: Int): List<StoreResponse> {
-        return elasticSearchCustomRepo.findStoresByRadius(lat, lon, radius)
+    fun searchStoresByLocation(lat: Double, lon: Double, radius: Int, category: String): List<StoreResponse> {
+        return elasticSearchCustomRepo.findStoresByRadiusAndCategory(lat, lon, radius, category)
+    }
+
+    @Transactional(readOnly = true)
+    fun findAllCategory(): List<CategoryResponse> {
+        return categoryJPARepo.findAll().map { category ->
+            CategoryResponse(
+                id = category.id,
+                category = category.category
+            )
+        }
     }
 
     fun saveLike(uuid: String, userId: Long) {

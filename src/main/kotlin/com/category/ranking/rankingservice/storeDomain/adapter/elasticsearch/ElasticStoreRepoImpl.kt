@@ -23,17 +23,17 @@ class ElasticStoreRepoImpl(
 
     val indexName = "store"
 
-    override fun findStoresByRadius(lat: Double, lon: Double, radius: Int): List<StoreResponse> {
-        return searchStores(lat, lon, radius, null)
+    override fun findStoresByRadiusAndCategory(lat: Double, lon: Double, radius: Int, category: String): List<StoreResponse> {
+        val query = findStoreByRadiusAndCategoryQuery(lat, lon, radius, category)
+        return searchStores(query)
     }
 
     override fun findStoresByRadiusLimit(lat: Double, lon: Double, radius: Int, limit: Int): List<StoreResponse> {
-        return searchStores(lat, lon, radius, limit)
+        val query =  findStoreByRadiusLimitQuery(lat, lon, radius, limit)
+        return searchStores(query)
     }
 
-    private fun searchStores(lat: Double, lon: Double, radius: Int, limit: Int?): List<StoreResponse> {
-        val query = findStoreByLocationAndDistanceQuery(lat, lon, radius, limit)
-
+    private fun searchStores(query: String): List<StoreResponse> {
         val request = Request(HttpMethod.GET.name(), "/$indexName/_search").apply {
             entity = StringEntity(query, ContentType.APPLICATION_JSON)
         }
@@ -49,17 +49,37 @@ class ElasticStoreRepoImpl(
         return searchResponse.hits.hits.map { it._source }
     }
 
-    private fun findStoreByLocationAndDistanceQuery(lat: Double, lon: Double, radius: Int, size: Int?): String {
-        val sizeClause = size?.let { "\"size\": $it," } ?: ""
-
+    private fun findStoreByRadiusLimitQuery(lat: Double, lon: Double, radius: Int, size: Int): String {
         return """
         {
-            $sizeClause
+            "size": $size,
             "query": {
                 "bool": {
                     "filter": {
                         "geo_distance": {
                             "distance": "${radius}m",
+                            "location": {
+                                "lat": $lat,
+                                "lon": $lon
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    """.trimIndent()
+    }
+
+    private fun findStoreByRadiusAndCategoryQuery(lat: Double, lon: Double, radius: Int, category: String?): String {
+        val categoryClause = category?.let { "\"term\": { $it }," } ?: ""
+        return """
+        {
+            "query": {
+                "bool": {
+                    "filter": {
+                        $categoryClause
+                        "geo_distance": {
+                            "distance": "$radius}m",
                             "location": {
                                 "lat": $lat,
                                 "lon": $lon
