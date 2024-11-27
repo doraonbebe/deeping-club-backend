@@ -33,6 +33,7 @@ class StoreService(
         val uuids = recommendedStores.map { it.uuid }
         val topLikedStores = storeRepo.findTopStoresByLikeCnt(uuids, topLikedStoresLimit)
 
+        //TODO: toStoreResponse() -> distance를 가지고 오기 위해 ES 호출 1번 더 해야함.
         val convertedTopLikedStores = topLikedStores.map { it.toStoreResponse() }
 
         val top5Stores = recommendedStores + convertedTopLikedStores
