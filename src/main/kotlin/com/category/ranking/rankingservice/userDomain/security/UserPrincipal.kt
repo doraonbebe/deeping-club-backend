@@ -21,7 +21,7 @@ class UserPrincipal(
     }
 
     override fun getUsername(): String? {
-        return user?.name
+        return user?.nickName
     }
 
     fun getUuid(): String? {

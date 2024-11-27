@@ -7,5 +7,7 @@ enum class CustomErrorCode(
     val message: String
 ) {
 
+    USER_PASSWORD_NOT_MATCH(HttpStatus.UNAUTHORIZED, "password does not match"),
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "User not found"),
 
 }
