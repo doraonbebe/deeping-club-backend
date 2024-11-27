@@ -20,16 +20,27 @@ class Reviews(
     @Column(name = "user_id", nullable = false)
     val userId: Long,
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    val status: Status,
+    var status: Status,
 
     @Column(name = "content")
-    val content: String,
+    var content: String,
 
     @Column(name = "rating", nullable = false)
-    val rating: Double = 0.0,
+    var rating: Double = 0.0,
 
 ): BaseEntity() {
+
+    fun updateReview(
+        status: Status,
+        content: String,
+        rating: Double
+    ){
+        this.status = status
+        this.content = content
+        this.rating = rating
+    }
 
     fun addReview() {
         store.reviews.add(this)

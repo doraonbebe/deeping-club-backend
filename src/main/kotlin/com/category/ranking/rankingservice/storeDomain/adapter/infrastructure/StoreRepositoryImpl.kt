@@ -1,6 +1,7 @@
 package com.category.ranking.rankingservice.storeDomain.adapter.infrastructure
 
 import com.category.ranking.rankingservice.storeDomain.adapter.api.out.database.StoreResponse
+import com.category.ranking.rankingservice.storeDomain.domain.QCategory
 import com.category.ranking.rankingservice.storeDomain.domain.QLikes
 import com.category.ranking.rankingservice.storeDomain.domain.QStore
 import com.querydsl.core.types.Projections
@@ -13,19 +14,21 @@ class StoreRepositoryImpl(
 ): StoreRepository {
     private val store = QStore.store
     private val likes = QLikes.likes
+    private val category = QCategory.category1
 
     override fun findTopStoresByLikeCnt(uuids: List<String>, limit: Int): List<StoreResponse> {
         return queryFactory
             .select(Projections.constructor(
                 StoreResponse::class.java,
                 store.name,
-                store.category,
+                category.category,
                 store.latitude,
                 store.longitude,
                 store.address,
                 store.uuid
             ))
-            .from(store)
+            .from(category)
+            .join(category.stores, store)
             .join(store.likes, likes)
             .where(store.uuid.notIn(uuids))
             .groupBy(store.id)

@@ -4,9 +4,11 @@ package com.category.ranking.rankingservice.storeDomain.adapter.api
 import com.category.ranking.rankingservice.common.adapter.api.CustomApiResponse
 import com.category.ranking.rankingservice.common.utils.getClientIp
 import com.category.ranking.rankingservice.storeDomain.adapter.api.`in`.LikeRequest
-import com.category.ranking.rankingservice.storeDomain.adapter.api.`in`.StoreReviewRequest
+import com.category.ranking.rankingservice.storeDomain.adapter.api.`in`.ReviewCreateRequest
+import com.category.ranking.rankingservice.storeDomain.adapter.api.`in`.ReviewUpdateRequest
 import com.category.ranking.rankingservice.storeDomain.adapter.api.out.database.CategoryResponse
 import com.category.ranking.rankingservice.storeDomain.adapter.api.out.elasticsearch.StoreResponse
+import com.category.ranking.rankingservice.storeDomain.service.StoreLikesService
 import com.category.ranking.rankingservice.storeDomain.service.StoreReviewsService
 import com.category.ranking.rankingservice.storeDomain.service.StoreService
 import io.swagger.v3.oas.annotations.Operation
@@ -15,6 +17,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.servlet.http.HttpServletRequest
+import jakarta.validation.Valid
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
 import org.springframework.http.ResponseEntity
@@ -25,7 +28,8 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/api/v1/stores")
 class StoreController(
     private val storeService: StoreService,
-    private val storeReviewsService: StoreReviewsService
+    private val storeReviewsService: StoreReviewsService,
+    private val storeLikesService: StoreLikesService,
 ) {
 
 
@@ -79,7 +83,7 @@ class StoreController(
 
     @PostMapping("/like")
     fun likeStore(@RequestBody likeRequest: LikeRequest): ResponseEntity<Any> {
-        storeService.saveLike(likeRequest.uuid, likeRequest.userId)
+        storeLikesService.saveLike(likeRequest.uuid, likeRequest.userId)
         return ResponseEntity.ok().body(true)
     }
 
@@ -91,7 +95,7 @@ class StoreController(
         return ResponseEntity.ok()
             .body(
                 CustomApiResponse.success(
-                    storeService.saveLike2(likeRequest.uuid, likeRequest.userId)
+                    storeLikesService.saveLike2(likeRequest.uuid, likeRequest.userId)
                 )
             )
     }
@@ -115,9 +119,30 @@ class StoreController(
     @PostMapping("/{uuid}/review")
     fun saveStoreReview(
         @PathVariable uuid: String,
-        reviewRequest: StoreReviewRequest
-    ){
-        storeReviewsService.saveStoreReview(uuid, reviewRequest)
+        @RequestBody @Valid reviewCreateRequest: ReviewCreateRequest
+    ): ResponseEntity<CustomApiResponse<Boolean>>{
+        storeReviewsService.saveStoreReview(uuid,  reviewCreateRequest)
+
+        return ResponseEntity.ok().body(CustomApiResponse.success(true))
+    }
+
+    @PutMapping("/{uuid}/review/{id}")
+    fun updateStoreReview(
+        @PathVariable uuid: String,
+        @PathVariable id: Long,
+        @RequestBody @Valid reviewUpdateRequest: ReviewUpdateRequest
+    ): ResponseEntity<CustomApiResponse<Boolean>>{
+        storeReviewsService.updateStoreReview(uuid, id, reviewUpdateRequest)
+        return ResponseEntity.ok().body(CustomApiResponse.success(true))
+    }
+
+    @DeleteMapping("/{uuid}/review/{id}")
+    fun deleteStoreReview(
+        @PathVariable uuid: String,
+        @PathVariable id: Long
+    ): ResponseEntity<CustomApiResponse<Boolean>>{
+        storeReviewsService.softDeleteStoreReview(uuid, id)
+        return ResponseEntity.ok().body(CustomApiResponse.success(true))
     }
 
 }
