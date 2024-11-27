@@ -1,5 +1,6 @@
 package com.category.ranking.rankingservice.common.adapter.api
 
+import com.category.ranking.rankingservice.common.enums.CustomErrorCode
 import org.springframework.http.HttpStatus
 
 data class CustomApiResponse<T>(
@@ -18,11 +19,11 @@ data class CustomApiResponse<T>(
             )
         }
 
-        fun <T> error(message: String, details: List<FieldErrorDetails>? = null): CustomApiResponse<T> {
+        fun <T> error(customError: CustomErrorCode, details: List<FieldErrorDetails>? = null): CustomApiResponse<T> {
             return CustomApiResponse(
-                code = HttpStatus.BAD_REQUEST.value(),
+                code = customError.status.value(),
                 success = false,
-                error = ErrorResponse(message, details)
+                error = ErrorResponse(customError.message, details)
             )
         }
     }

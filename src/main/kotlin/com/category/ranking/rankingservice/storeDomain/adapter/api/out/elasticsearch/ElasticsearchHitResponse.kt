@@ -4,7 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class ElasticsearchHitResponse<T>(
-    val _source: T
+    val _source: T,
+    val sort: String?
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)

@@ -24,8 +24,13 @@ class UserService(
     }
 
     @Transactional(readOnly = true)
-    fun findByUserEmail(email: String) : User {
-        return userRepository.findByEmail(email) ?: throw UsernameNotFoundException("user not find")
+    fun findUserByEmail(email: String) : User? {
+        return userRepository.findByEmail(email)
+    }
+
+    @Transactional(readOnly = true)
+    fun existsUserEmail(email: String): Boolean {
+        return userRepository.existsByEmail(email)
     }
 
     fun isPasswordMatch(rowPassword: String, encodedPassword: String) : Boolean {
