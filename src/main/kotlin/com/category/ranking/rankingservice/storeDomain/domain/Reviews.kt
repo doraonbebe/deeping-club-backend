@@ -2,7 +2,9 @@ package com.category.ranking.rankingservice.storeDomain.domain
 
 import com.category.ranking.rankingservice.common.domain.BaseEntity
 import com.fasterxml.jackson.annotation.JsonBackReference
+import com.fasterxml.jackson.annotation.JsonManagedReference
 import jakarta.persistence.*
+import java.time.LocalDate
 
 @Entity
 @Table(name = "reviews")
@@ -30,16 +32,38 @@ class Reviews(
     @Column(name = "rating", nullable = false)
     var rating: Double = 0.0,
 
+    @Column(name = "written_at", nullable = false)
+    var writtenAt: LocalDate,
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "reviews", cascade = [CascadeType.ALL], fetch = FetchType.LAZY, orphanRemoval = true)
+    val reviewAttachments: MutableList<ReviewAttachments> = mutableListOf()
+
+
 ): BaseEntity() {
 
     fun updateReview(
         status: Status,
         content: String,
-        rating: Double
+        rating: Double,
+        writtenAt: LocalDate,
+        imageUrls: MutableList<String>
     ){
         this.status = status
         this.content = content
         this.rating = rating
+        this.writtenAt = writtenAt
+
+        this.reviewAttachments.clear()
+
+        val attachments = imageUrls.map { imageUrl ->
+            ReviewAttachments(
+                reviews = this,
+                imageUrl = imageUrl
+            )
+        }
+        this.reviewAttachments.addAll(attachments)
+
     }
 
     fun addReview() {
@@ -53,14 +77,26 @@ class Reviews(
             status: Status,
             content: String,
             rating: Double,
+            writtenAt: LocalDate,
+            imageUrls: MutableList<String>
         ): Reviews {
             val review = Reviews(
                 store = store,
                 userId = userId,
                 status = status,
                 content = content,
-                rating = rating
+                rating = rating,
+                writtenAt = writtenAt
             )
+
+            val attachments = imageUrls.map { imageUrl ->
+                ReviewAttachments(
+                    reviews = review,
+                    imageUrl = imageUrl
+                )
+            }
+            review.reviewAttachments.addAll(attachments)
+
             review.addReview()
             return review
         }

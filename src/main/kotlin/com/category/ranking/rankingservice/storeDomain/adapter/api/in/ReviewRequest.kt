@@ -1,10 +1,12 @@
 package com.category.ranking.rankingservice.storeDomain.adapter.api.`in`
 
+import com.fasterxml.jackson.annotation.JsonFormat
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.DecimalMax
 import jakarta.validation.constraints.DecimalMin
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
+import java.time.LocalDate
 
 @Schema(name = "가게 리뷰 등록")
 data class ReviewCreateRequest(
@@ -13,6 +15,11 @@ data class ReviewCreateRequest(
 
     @field:NotBlank(message = "content 빈 공백을 허용하지 않음")
     val content: String,
+
+    @field:JsonFormat(pattern = "yyyy-MM-dd")
+    val writtenAt: LocalDate,
+
+    val imageUrls: MutableList<String> = mutableListOf(),
 
     @field:NotNull(message = "rating 필수")
     @field:DecimalMin(value = "1.0", inclusive = true)
@@ -27,6 +34,11 @@ data class ReviewUpdateRequest(
 
     @field:NotBlank(message = "content 빈 공백을 허용하지 않음")
     val content: String,
+
+    @field:JsonFormat(pattern = "yyyy-MM-dd")
+    val writtenAt: LocalDate,
+
+    val imageUrls: MutableList<String> = mutableListOf(),
 
     @field:NotNull(message = "rating 필수")
     @field:DecimalMin(value = "1.0", inclusive = true)

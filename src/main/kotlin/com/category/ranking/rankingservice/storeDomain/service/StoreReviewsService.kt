@@ -21,6 +21,8 @@ class StoreReviewsService(
         val userId = reviewCreateRequest.userId
         val rating = reviewCreateRequest.rating
         val content = reviewCreateRequest.content
+        val writtenAt = reviewCreateRequest.writtenAt
+        val imageUrl = reviewCreateRequest.imageUrls
 
         val store = storeService.findStoreByUuid(uuid) ?: throw EntityNotFoundException("Store $uuid not found")
 
@@ -30,7 +32,9 @@ class StoreReviewsService(
                 userId,
                 Status.EXPOSURE,
                 content,
-                rating
+                rating,
+                writtenAt,
+                imageUrl
             )
         )
     }
@@ -39,10 +43,18 @@ class StoreReviewsService(
     fun updateStoreReview(uuid: String, id: Long, reviewUpdateRequest: ReviewUpdateRequest) {
         val rating = reviewUpdateRequest.rating
         val content = reviewUpdateRequest.content
+        val writtenAt = reviewUpdateRequest.writtenAt
+        val imageUrl = reviewUpdateRequest.imageUrls
 
         val review = findReviewByIdOrNull(id)
 
-        review.updateReview(review.status, content, rating)
+        review.updateReview(
+            review.status,
+            content,
+            rating,
+            writtenAt,
+            imageUrl
+        )
 
 
     }
@@ -50,7 +62,14 @@ class StoreReviewsService(
     @Transactional
     fun softDeleteStoreReview(uuid: String, id: Long) {
         val review = findReviewByIdOrNull(id)
-        review.updateReview(Status.DELETION, review.content, review.rating)
+
+        review.updateReview(
+            Status.DELETION,
+            review.content,
+            review.rating,
+            review.writtenAt,
+            review.reviewAttachments.map { it.imageUrl }.toMutableList()
+        )
     }
 
     @Transactional(readOnly = true)

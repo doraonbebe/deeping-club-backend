@@ -62,22 +62,6 @@ class Store(
         this.viewsCnt += viewsCnt
     }
 
-    fun addReview(
-        userId: Long,
-        status: Status,
-        content: String,
-        rating: Double
-    ){
-        val review = Reviews.createReview(
-            this,
-            userId,
-            status,
-            content,
-            rating
-        )
-        reviews.add(review);
-    }
-
     override fun toString(): String {
         return "Store(id=$id, name=$name, category='$category', address='$address', latitude=$latitude, longitude=$longitude, viewsCnt=$viewsCnt, likesCnt=$likesCnt, uuid='$uuid')"
     }

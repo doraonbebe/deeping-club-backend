@@ -114,7 +114,7 @@ class StoreController(
             )
     }
 
-    /* 로그인 한 유저만 리뷰를 작성할 수 있는지 기획 확정 필요. 만약 로그인 하지 않은 유저도 작성할 수 있다면, 수정, 삭제는? */
+    //TODO: 목록, 상세 추가
 
     @PostMapping("/{uuid}/review")
     fun saveStoreReview(
