@@ -4,8 +4,10 @@ import com.category.ranking.rankingservice.common.domain.BaseEntity
 import com.fasterxml.jackson.annotation.JsonBackReference
 import com.fasterxml.jackson.annotation.JsonManagedReference
 import jakarta.persistence.*
+import lombok.ToString
 import java.time.LocalDate
 
+@ToString
 @Entity
 @Table(name = "reviews")
 class Reviews(

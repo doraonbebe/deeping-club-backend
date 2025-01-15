@@ -3,7 +3,9 @@ package com.category.ranking.rankingservice.storeDomain.domain
 import com.category.ranking.rankingservice.common.domain.BaseEntity
 import com.fasterxml.jackson.annotation.JsonBackReference
 import jakarta.persistence.*
+import lombok.ToString
 
+@ToString
 @Entity
 @Table(name = "review_attachments")
 class ReviewAttachments(

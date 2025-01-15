@@ -2,6 +2,8 @@ package com.category.ranking.rankingservice.storeDomain.service
 
 import com.category.ranking.rankingservice.storeDomain.adapter.api.`in`.ReviewCreateRequest
 import com.category.ranking.rankingservice.storeDomain.adapter.api.`in`.ReviewUpdateRequest
+import com.category.ranking.rankingservice.storeDomain.adapter.api.out.database.ReviewResponse
+import com.category.ranking.rankingservice.storeDomain.adapter.infrastructure.StoreReviewsRepository
 import com.category.ranking.rankingservice.storeDomain.domain.Reviews
 import com.category.ranking.rankingservice.storeDomain.domain.Status
 import com.category.ranking.rankingservice.storeDomain.repository.ReviewsJPARepository
@@ -13,8 +15,21 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class StoreReviewsService(
     val reviewJPARepo: ReviewsJPARepository,
-    val storeService: StoreService
+    val storeService: StoreService,
+    val storeReviewsRepo: StoreReviewsRepository
 ) {
+
+    @Transactional(readOnly = true)
+    fun findReviews(uuid: String, userId: Long) : List<ReviewResponse> {
+        return storeReviewsRepo.findReviewByStoreUuidAndUserId(uuid, userId)
+    }
+
+
+    @Transactional(readOnly = true)
+    fun findReview(uuid: String, reviewId: Long, userId: Long) : ReviewResponse? {
+        return storeReviewsRepo.findReviewByIdAndStoreUuidAndUserId(reviewId, uuid, userId)
+    }
+
 
     @Transactional
     fun saveStoreReview(uuid: String, reviewCreateRequest: ReviewCreateRequest) {

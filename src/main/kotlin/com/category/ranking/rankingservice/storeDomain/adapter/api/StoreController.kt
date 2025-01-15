@@ -7,14 +7,18 @@ import com.category.ranking.rankingservice.storeDomain.adapter.api.`in`.LikeRequ
 import com.category.ranking.rankingservice.storeDomain.adapter.api.`in`.ReviewCreateRequest
 import com.category.ranking.rankingservice.storeDomain.adapter.api.`in`.ReviewUpdateRequest
 import com.category.ranking.rankingservice.storeDomain.adapter.api.out.database.CategoryResponse
+import com.category.ranking.rankingservice.storeDomain.adapter.api.out.database.ReviewResponse
 import com.category.ranking.rankingservice.storeDomain.adapter.api.out.elasticsearch.StoreResponse
 import com.category.ranking.rankingservice.storeDomain.service.StoreLikesService
 import com.category.ranking.rankingservice.storeDomain.service.StoreReviewsService
 import com.category.ranking.rankingservice.storeDomain.service.StoreService
+import com.category.ranking.rankingservice.userDomain.security.UserPrincipal
+import com.category.ranking.rankingservice.userDomain.service.LoginUser
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
@@ -115,6 +119,22 @@ class StoreController(
     }
 
     //TODO: 목록, 상세 추가
+    @GetMapping("/{uuid}/review")
+    fun findReviews(
+        @PathVariable uuid: String,
+        @LoginUser userPrincipal: UserPrincipal
+    ): ResponseEntity<List<ReviewResponse>> {
+        return ResponseEntity.ok().body(storeReviewsService.findReviews(uuid, userPrincipal.getId()))
+    }
+
+    @GetMapping("/{uuid}/review/{id}")
+    fun findReview(
+        @PathVariable uuid: String,
+        @PathVariable id: Long,
+        @LoginUser userPrincipal: UserPrincipal
+    ): ResponseEntity<ReviewResponse> {
+        return ResponseEntity.ok().body(storeReviewsService.findReview(uuid, id, userPrincipal.getId()))
+    }
 
     @PostMapping("/{uuid}/review")
     fun saveStoreReview(
