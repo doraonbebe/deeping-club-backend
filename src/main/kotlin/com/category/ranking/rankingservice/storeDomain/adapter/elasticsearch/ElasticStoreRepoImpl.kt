@@ -27,9 +27,10 @@ class ElasticStoreRepoImpl(
         lat: Double,
         lon: Double,
         radius: Int,
-        category: String
+        category: String?,
+        filter: String?
     ): List<StoreResponse> {
-        val query = findStoreByRadiusAndCategoryQuery(lat, lon, radius, category)
+        val query = findStoreByRadiusAndCategoryQuery(lat, lon, radius, category, filter)
         return searchStores(query)
     }
 
@@ -52,7 +53,7 @@ class ElasticStoreRepoImpl(
         )
 
         return searchResponse.hits.hits.map {hit ->
-            val sort = (hit.sort?.firstOrNull() as Double).toInt()
+            val sort = (hit.sort.firstOrNull() as Double).toInt()
             hit._source.copy(distance = sort)
         }
     }
@@ -90,14 +91,16 @@ class ElasticStoreRepoImpl(
     """.trimIndent()
     }
 
-    private fun findStoreByRadiusAndCategoryQuery(lat: Double, lon: Double, radius: Int, category: String?): String {
+    private fun findStoreByRadiusAndCategoryQuery(lat: Double, lon: Double, radius: Int, category: String?, filter: String?): String {
         val categoryClause = if (category.isNullOrBlank()) "" else "{ \"term\": { \"category\": \"$category\" } },"
+        val filterClause = if (filter.isNullOrBlank()) "" else "{ \"term\": { \"name\": \"$filter\" } },"
         return """
         {
             "query": {
                 "bool": {
                     "filter": [
                         $categoryClause
+                        $filterClause
                         {
                             "geo_distance": {
                                 "distance": "${radius}m",

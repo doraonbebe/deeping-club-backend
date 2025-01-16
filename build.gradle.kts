@@ -76,6 +76,10 @@ dependencies {
     kapt("jakarta.annotation:jakarta.annotation-api")
     kapt("jakarta.persistence:jakarta.persistence-api")
 //    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+
+    //WebFlux
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
+    testImplementation("io.projectreactor:reactor-test")
 }
 
 kotlin {
