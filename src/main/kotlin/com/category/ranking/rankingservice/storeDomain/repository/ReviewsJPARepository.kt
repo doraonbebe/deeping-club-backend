@@ -8,6 +8,5 @@ import org.springframework.stereotype.Repository
 @Repository
 interface ReviewsJPARepository : JpaRepository<Reviews, Long> {
 
-    fun findByUserIdAndStore(userId: Long, store: Store): Reviews?
 
 }

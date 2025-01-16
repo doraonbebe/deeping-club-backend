@@ -24,8 +24,12 @@ class UserPrincipal(
         return user?.nickName
     }
 
-    fun getUuid(): String? {
-        return user?.uuid
+    fun getUuid(): String {
+        return user?.uuid!!
+    }
+
+    fun getId(): Long {
+        return user?.id!!
     }
 
     fun getEmail(): String? {
