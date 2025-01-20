@@ -23,27 +23,30 @@ class StoreService(
 
     ) {
 
+    // 추천 3개, 좋아요 3개 -> 현재 구조상 안 됨.
+    // 기획 변경 필요 -> 우선 추천만 뽑던지 or 추천, 좋아요 필터 걸던지.
     fun searchStoresByLocationWithLimit(lat: Double, lon: Double, radius: Int, limit: Int): List<StoreResponse> {
-        val recommendedStoresLimit = 3
 
-        val recommendedStores = elasticSearchCustomRepo.findStoresByRadiusLimit(lat, lon, radius, recommendedStoresLimit)
-        val recommendedStoresCnt = recommendedStores.size
-
-        val topLikedStoresLimit = limit - recommendedStoresCnt
-        val uuids = recommendedStores.map { it.uuid }
-        val topLikedStores = storeRepo.findTopStoresByLikeCnt(uuids, topLikedStoresLimit)
-
-        //TODO: toStoreResponse() -> distance를 가지고 오기 위해 ES 호출 1번 더 해야함.
-        val convertedTopLikedStores = topLikedStores.map { it.toStoreResponse() }
-
-        val top5Stores = recommendedStores + convertedTopLikedStores
-        return top5Stores
+        val recommendedStores = elasticSearchCustomRepo.findStoresByRadiusLimit(lat, lon, radius, limit)
+//        val recommendedStoresLimit = 3
+//        val recommendedStores = elasticSearchCustomRepo.findStoresByRadiusLimit(lat, lon, radius, recommendedStoresLimit)
+//        val recommendedStoresCnt = recommendedStores.size
+//
+//        val topLikedStoresLimit = limit - recommendedStoresCnt
+//        val uuids = recommendedStores.map { it.uuid }
+//        val topLikedStores = storeRepo.findTopStoresByLikeCnt(uuids, topLikedStoresLimit)
+//
+//        //TODO: toStoreResponse() -> distance를 가지고 오기 위해 ES 호출 1번 더 해야함.
+//        val convertedTopLikedStores = topLikedStores.map { it.toStoreResponse() }
+//
+//        val top5Stores = recommendedStores + convertedTopLikedStores
+        return recommendedStores
     }
 
 
 
-    fun searchStoresByLocation(lat: Double, lon: Double, radius: Int, category: String): List<StoreResponse> {
-        return elasticSearchCustomRepo.findStoresByRadiusAndCategory(lat, lon, radius, category)
+    fun searchStoresByLocation(lat: Double, lon: Double, radius: Int, category: String?, filter: String?): List<StoreResponse> {
+        return elasticSearchCustomRepo.findStoresByRadiusAndCategory(lat, lon, radius, category, filter)
     }
 
     @Transactional(readOnly = true)
